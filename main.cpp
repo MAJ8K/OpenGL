@@ -1,53 +1,44 @@
+#define GLEW_STATIC
+#include <GL/glew.h>
+#include "GLFW-Window.h"
+
 #include <iostream>
-#include "glm/mat4x4.hpp"
-#include "GLFW/glfw3.h"
 
-#include <GLFW/glfw3.h>
+struct Size {static const short W = 800, H = 600;};
+float positions[6] = {
+    0,0.5f,
+    0.5f,-0.5f,
+    -0.5f,-0.5f
+};
 
-struct Size {static const short W = 800,H = 600;};
-
-int main(void)
+int main(int argc, char const *argv[])
 {
-    GLFWwindow* window;
+    Window window(Size::W,Size::H,"Hello World");
+    if(glewInit() != GLEW_OK) return -1;
 
-    /* Initialize the library */
-    if (!glfwInit())
-        return -1;
+    std::cout << glGetString(GL_VERSION) <<std::endl;
 
-    window = glfwCreateWindow(
-        Size::W,Size::H,
-        "Hello World",
-        NULL, NULL
-    );
-    if (!window)
-    {
-        glfwTerminate();
-        return -1;
+    uint32_t buffer;
+    glGenBuffers(1,&buffer);
+    glBindBuffer(GL_ARRAY_BUFFER,buffer);{
+        glBufferData(
+            GL_ARRAY_BUFFER,sizeof(float)*6,
+            positions,GL_STATIC_DRAW
+        );
+        //layout
+        glVertexAttribPointer(
+            0, 2,
+            GL_FLOAT,GL_FALSE,
+            sizeof(float)*2,
+            (const void*)0
+        );
+        glEnableVertexAttribArray(0);
     }
-
-    /* Make the window's context current */
-    glfwMakeContextCurrent(window);
-
-    /* Loop until the user closes the window */
-    while (!glfwWindowShouldClose(window))
+    while (window.update())
     {
-        /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
-
-        glBegin(GL_TRIANGLES);
-    /* Create a windowed mode window and its OpenGL context */
-        glVertex2f(-0.5f,-0.5f);
-        glVertex2f(0.5f,-0.5f);
-        glVertex2f(0,0.5f);
-        glEnd();
-
-        /* Swap front and back buffers */
-        glfwSwapBuffers(window);
-
-        /* Poll for and process events */
-        glfwPollEvents();
+        glDrawArrays(GL_TRIANGLES,0,3);
     }
-
-    glfwTerminate();
+    
     return 0;
 }
