@@ -4,7 +4,7 @@
 class Window
 {
 private:
-    GLFWwindow* window;
+    GLFWwindow* m_window;
 public:
     Window(short,short,const char*);
     ~Window();
@@ -15,20 +15,20 @@ public:
 Window::Window(short width,short height,const char* title)
 {
     glfwInit();
-    window = glfwCreateWindow(
+    m_window = glfwCreateWindow(
         width,height,title,NULL,NULL
     );
-    glfwMakeContextCurrent(window);
+    glfwMakeContextCurrent(m_window);
 }
 
 Window::~Window()
 {
-    glfwDestroyWindow(window);
+    glfwDestroyWindow(m_window);
     glfwTerminate();
 }
 
 bool Window::update(){
-    glfwSwapBuffers(window);
+    glfwSwapBuffers(m_window);
     glfwPollEvents();
-    return !glfwWindowShouldClose(window);
+    return !glfwWindowShouldClose(m_window);
 }

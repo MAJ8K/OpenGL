@@ -6,8 +6,34 @@
 #include <string>
 #include <sstream>
 
-static unsigned int compileShader(const std::string& source, unsigned int type){
-    unsigned int id = glCreateShader(type);
+class Program
+{
+private:
+    uint32_t m_id;
+public:
+    Program(const std::string&,const std::string&);
+    ~Program();
+
+    void bind();
+    void unbind();
+    const uint32_t& id(){return m_id;}
+};
+
+static std::string parseShader(const std::string& filepath){
+    std::ifstream stream(filepath);
+
+    std::string line;
+    std::stringstream ss;
+    while (getline(stream, line))
+    {
+        ss << line << '\n';
+    }
+    return ss.str();
+}
+
+
+static uint32_t compileShader(const std::string& source, uint32_t type){
+    uint32_t id = glCreateShader(type);
     const char* src = source.c_str();
     glShaderSource(id, 1, &src, nullptr);
     glCompileShader(id);
@@ -21,34 +47,27 @@ static unsigned int compileShader(const std::string& source, unsigned int type){
         glGetShaderInfoLog(id,length,&length,message);
         std::cout << "shader failed" << message << std::endl;
     }
-
     return id;
 }
-static unsigned int createShader(
-    const std::string& vertexShader,
-    const std::string& fragmentShader){
-    unsigned int program = glCreateProgram();
+
+Program::Program(const std::string& vertFile,const std::string& fragFile)
+{
+    std::string vertexShader = parseShader(vertFile);
+    std::string fragmentShader = parseShader(fragFile);
+    m_id = glCreateProgram();
     unsigned int vs = compileShader(vertexShader,GL_VERTEX_SHADER);
     unsigned int fs = compileShader(fragmentShader,GL_FRAGMENT_SHADER);
-    glAttachShader(program,vs);
-    glAttachShader(program,fs);
-    glLinkProgram(program);
-    glValidateProgram(program);
+    glAttachShader(m_id,vs);
+    glAttachShader(m_id,fs);
+    glLinkProgram(m_id);
+    glValidateProgram(m_id);
 
     glDeleteShader(vs);
     glDeleteShader(fs);
-
-    return program;
 }
 
-static std::string parseShader(const std::string& filepath){
-    std::ifstream stream(filepath);
+Program::~Program(){glDeleteProgram(m_id);}
 
-    std::string line;
-    std::stringstream ss;
-    while (getline(stream, line))
-    {
-        ss << line << '\n';
-    }
-    return ss.str();
-}
+void Program::bind(){glUseProgram(m_id);}
+void Program::unbind(){glUseProgram(0);}
+
