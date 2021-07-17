@@ -8,6 +8,7 @@ class VertexArray
 {
 private:
     uint32_t m_id;
+    uint32_t m_vertCount;
 public:
     VertexArray(/* args */);
     ~VertexArray();
@@ -17,6 +18,8 @@ public:
 
     void addBuffer(Buffer*);
     void addLayout();
+
+    uint32_t vertCount();
 };
 
 VertexArray::VertexArray(/* args */)
@@ -36,11 +39,21 @@ void VertexArray::addBuffer(Buffer* buffer){
 }
 
 void VertexArray::addLayout(){
+    m_vertCount = 6;
     glVertexAttribPointer(
         0, 2,
         GL_FLOAT,GL_FALSE,
-        sizeof(float)*2,
+        sizeof(float)*4,
         (const void*)0
     );
     glEnableVertexAttribArray(0);
+    glVertexAttribPointer(
+        1,2,
+        GL_FLOAT,GL_FALSE,
+        sizeof(float)*4,
+        (const void*)0
+    );
+    glEnableVertexAttribArray(1);
 }
+
+    uint32_t VertexArray::vertCount(){return m_vertCount;}
