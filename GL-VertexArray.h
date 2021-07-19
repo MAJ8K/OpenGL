@@ -39,19 +39,19 @@ void VertexArray::addBuffer(Buffer* buffer){
 }
 
 void VertexArray::addLayout(){
-    m_vertCount = 6;
+    m_vertCount = 36;
     glVertexAttribPointer(
-        0, 2,
+        0, 3,
         GL_FLOAT,GL_FALSE,
-        sizeof(float)*4,
+        sizeof(float)*5,//size of Vertex
         (const void*)0
     );
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(
         1,2,
         GL_FLOAT,GL_FALSE,
-        sizeof(float)*4,
-        (const void*)0
+        sizeof(float)*5,
+        (const void*)(sizeof(float)*3)//the start of the attribute in a single Vertex
     );
     glEnableVertexAttribArray(1);
 }
